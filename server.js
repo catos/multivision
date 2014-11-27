@@ -1,59 +1,49 @@
-// Bare tester en liten ting ifm. github
-
 var express = require('express'),
-    stylus = require('stylus'),
-    logger = require('morgan'),
-    bodyParser = require('body-parser')
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    passport = require('passport'),
+    LocalStrategy = require('passport-local').Strategy;
 
 var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 var app = express();
 
-function compile(str, path) {
-    return stylus(str).set('filename', path);
-};
+var config = require('./server/config/config')[env];
 
-app.set('views', __dirname + '/server/views');
-app.set('view engine', 'jade');
-app.use(logger('dev'));
-app.use(bodyParser());
-app.use(stylus.middleware(
-    {
-        src: __dirname + '/public',
-        compile: compile
+require('./server/config/express')(app, config);
+
+require('./server/config/mongoose')(config);
+
+var User = mongoose.model('User');
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        User.findOne({username:username}).exec(function(err, user) {
+            if (user && user.authenticate(password)) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+            }
+        })
     }
 ));
-app.use(express.static(__dirname + '/public'));
 
-if (env === 'development') {
-    mongoose.connect('mongodb://localhost/multivision');
-} else {
-    mongoose.connect('mongodb://cato:monzter1@ds035260.mongolab.com:35260/multivision_cato');
-}
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error...'));
-db.once('open', function callback() {
-    console.log('multivision db openened');
-})
-var messageSchema = mongoose.Schema({message: String});
-var Message = mongoose.model('Message', messageSchema);
-var mongoMessage;
-Message.findOne().exec(function(err, messageDoc) {
-   mongoMessage = messageDoc.message;
+passport.serializeUser(function(user, done) {
+   if (user) {
+       done(null, user._id);
+   }
 });
 
-app.get('/partials/:partialPath', function(req, res) {
-    res.render('partials/' + req.params.partialPath);
+passport.deserializeUser(function(id, done) {
+   User.findOne({_id:id}).exec(function(err, user) {
+       if (user) {
+           return done(null, user);
+       } else {
+           return done(null, false);
+       }
+   })
 });
 
-app.get('*', function (req, res) {
-    res.render('index', {
-        mongoMessage: mongoMessage
-    });
-});
+require('./server/config/routes')(app);
 
-var port = process.env.PORT || 3030;
-app.listen(port);
-console.log('Listening on port ' + port + '...');
+app.listen(config.port);
+
+console.log('Listening on port ' + config.port + ', env: ' + env);
