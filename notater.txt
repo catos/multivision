@@ -3,7 +3,7 @@
 # Gives info on whats not committed and stuff ?
 git status
 
-# Add all files to be committed
+# Add all files to be committed (--force)
 git add -A
 
 # Commit files with a simple message
@@ -23,4 +23,8 @@ heroku login
 # Creates a Heroku-application
 heroku create
 
-# 
+# Heroku will allocate some resources to the application
+heroku ps:scale web=1
+
+# Open current app in a local browser
+heroku open
