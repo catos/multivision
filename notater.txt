@@ -1,0 +1,7 @@
+### GitHub
+
+# Gives info on whats not committed and stuff ?
+git status
+
+# Add all files to be committed
+git add *
