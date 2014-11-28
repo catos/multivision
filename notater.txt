@@ -4,4 +4,23 @@
 git status
 
 # Add all files to be committed
-git add *
+git add -A
+
+# Commit files with a simple message
+git commit -m "message"
+
+# List remote....something....
+git remote -v
+
+# Push master branch to Heroku
+git push heroku master
+
+### Heroku
+
+# Login to Heroku
+heroku login
+
+# Creates a Heroku-application
+heroku create
+
+# 
