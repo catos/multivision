@@ -28,3 +28,18 @@ heroku ps:scale web=1
 
 # Open current app in a local browser
 heroku open
+
+
+### Testing with karma and mocha
+npm install --save-dev karma mocha karma-mocha karma-chai-plugins
+
+npm install karma-cli -g
+
+bower install angular-mocks#1.2.0
+
+karma init
+-> mocha
+-> public/app/**/*.js
+
+// npm install karma-jasmine -g
+karma start
