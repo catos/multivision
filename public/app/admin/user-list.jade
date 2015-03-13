@@ -1,4 +1,8 @@
 .container
-    table.table
+    table.table.table-striped.table-hover
+        tr
+            th Name
+            th Username
         tr(ng-repeat="user in users")
             td {{user.firstName + ' ' + user.lastName }}
+            td {{user.username }}

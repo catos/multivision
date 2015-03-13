@@ -17,3 +17,4 @@ require('./server/config/routes')(app);
 app.listen(config.port);
 
 console.log('Listening on port ' + config.port + ', env: ' + env);
+console.log('\o/');
